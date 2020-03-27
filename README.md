@@ -1,7 +1,7 @@
 # Ansible-CentOS7-Apache-Mysql
 
 
-This ansible playbook useful to install Apache web server and Mysql databse in CentOS 7.
+This ansible playbook is useful to install Apache web server and Mysql databse in CentOS 7.
 
 ## Requirements
 
