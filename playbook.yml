@@ -1,0 +1,62 @@
+- hosts: webserver
+  become: yes
+  tasks:
+    - name: Setup repo for Mysql 5.7
+      yum:
+        name: http://repo.mysql.com/mysql57-community-release-el7-10.noarch.rpm
+        state: present
+
+    - name: Install Packages
+      yum:
+        name:
+        - httpd
+        - mysql-community-server
+        - firewalld
+        state: present
+
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Start Mysql
+      service:
+        name: mysqld
+        state: started
+        enabled: yes
+
+    - name: Start Firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Apache to listen on 8080
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: Listen 80
+        line: Listen 8080
+      notify: Restart Apache
+
+    - name: Allow 8080 port
+      firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+      notify: Restart Firewalld
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+  handlers:
+    - name: Restart Firewalld
+      service:
+        name: firewalld
+        state: restarted
+
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
